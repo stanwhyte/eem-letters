@@ -16,7 +16,7 @@ routes = [
 [[d1_databases]]
 binding = "DB"
 database_name = "eem-letters"
-database_id = "PASTE_DATABASE_ID_FROM_D1_CREATE"
+database_id = "0bd9e52e-d75c-4afe-aabe-b3bfb2edbac9"
 
 [vars]
 PUBLIC_BASE      = "https://letters.empowerethnicmedia.org"
@@ -24,7 +24,7 @@ FROM_ADDR        = "letters@empowerethnicmedia.org"
 FROM_NAME        = "Empower Ethnic Media"
 CAMPAIGN_COPY    = "letters@empowerethnicmedia.org"
 FRAME_ANCESTORS  = "https://empowerethnicmedia.org https://www.empowerethnicmedia.org"
-TURNSTILE_SITEKEY = "PASTE_YOUR_TURNSTILE_SITE_KEY"
+TURNSTILE_SITEKEY = "0x4AAAAAAEjKZb3xQy48vDrz"
 
 # Resend Audience for campaign updates. Contacts are added only after the
 # reader clicks the confirmation link, so the list is double opt-in.

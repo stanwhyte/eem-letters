@@ -8,6 +8,6 @@
     "db:init": "wrangler d1 execute eem-letters --remote --file=./schema.sql"
   },
   "devDependencies": {
-    "wrangler": "^3.90.0"
+    "wrangler": "^4.128.0"
   }
 }

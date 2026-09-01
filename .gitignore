@@ -1,17 +1,10 @@
-# Secrets. These must never be committed.
 .dev.vars
 .dev.vars.*
 *.env
 .env*
-
-# Wrangler
 .wrangler/
 node_modules/
-
-# Local exports that contain personal data
 consent-*.json
 consent-*.csv
 consent-*.tsv
-
-# macOS
 .DS_Store
