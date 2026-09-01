@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Write to your MP — Empower Ethnic Media</title>
+<style>
+  :root{
+    --red:#D8232A;
+    --red-deep:#A81820;
+    --ink:#1A1718;
+    --ink-soft:#5C5652;
+    --rule:#E2DDD8;
+    --field:#FFFFFF;
+    --wash:#FBF9F7;
+    --focus:#0B57D0;
+    --pale:34px;                 /* width of the red flag bands */
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:transparent}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .frame{
+    position:relative;
+    background:#fff;
+    border:1px solid var(--rule);
+    max-width:760px;
+    margin:0 auto;
+    overflow:hidden;
+  }
+  /* the two red pales of the flag */
+  .frame::before,.frame::after{
+    content:"";position:absolute;top:0;bottom:0;width:var(--pale);
+    background:var(--red);
+  }
+  .frame::before{left:0}
+  .frame::after{right:0}
+  .inner{padding:34px calc(var(--pale) + 26px) 30px}
+
+  h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:29px;
+    line-height:1.15;
+    letter-spacing:-0.012em;
+    margin:0 0 10px;
+  }
+  h2{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:20px;
+    line-height:1.25;
+    margin:0 0 4px;
+  }
+  p{margin:0 0 14px;max-width:62ch}
+  .lede{color:var(--ink-soft);font-size:16.5px;margin-bottom:22px}
+  .fine{font-size:13.5px;line-height:1.5;color:var(--ink-soft)}
+
+  /* ---------- signature element: the language mosaic ---------- */
+  .mosaic{
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding:14px 0 12px;
+    margin:0 0 26px;
+    display:flex;flex-wrap:wrap;gap:5px;
+    max-height:112px;overflow:hidden;
+    position:relative;
+  }
+  .mosaic::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:34px;
+    background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);
+    pointer-events:none;
+  }
+  .tile{
+    font-size:13px;line-height:1;
+    padding:6px 9px;
+    border:1px solid var(--rule);
+    background:#fff;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+    font-family:var(--sans);
+    transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+  }
+  .tile:hover{border-color:var(--red);color:var(--ink)}
+  .tile[aria-pressed="true"]{
+    background:var(--red);border-color:var(--red);color:#fff;
+    transform:translateY(-1px);
+  }
+  .mosaic-note{
+    font-size:13px;color:var(--ink-soft);margin:-18px 0 24px;
+  }
+
+  /* ---------- step rail ---------- */
+  .rail{display:flex;gap:0;margin:0 0 26px;border-bottom:1px solid var(--rule)}
+  .rail span{
+    font-size:12.5px;color:var(--ink-soft);
+    padding:0 0 9px;margin-right:20px;
+    border-bottom:2px solid transparent;margin-bottom:-1px;
+  }
+  .rail span.on{color:var(--ink);border-bottom-color:var(--red);font-weight:600}
+  .rail span.done{color:var(--ink)}
+
+  .step{display:none}
+  .step.on{display:block}
+
+  label{display:block;font-size:14px;font-weight:600;margin:0 0 5px}
+  .hint{font-weight:400;color:var(--ink-soft);font-size:13px;margin:0 0 7px}
+  input[type=text],input[type=email],textarea,select{
+    width:100%;font-family:inherit;font-size:16px;color:var(--ink);
+    background:var(--field);
+    border:1px solid #CFC9C3;border-radius:2px;
+    padding:11px 12px;
+  }
+  input:focus,textarea:focus,select:focus,button:focus-visible,.tile:focus-visible{
+    outline:2px solid var(--focus);outline-offset:2px;
+  }
+  textarea{min-height:300px;line-height:1.6;resize:vertical}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>*{flex:1 1 220px}
+  .fieldset{margin:0 0 18px}
+
+  button{
+    font-family:inherit;font-size:15px;font-weight:600;
+    padding:12px 20px;border-radius:2px;cursor:pointer;
+    border:1px solid var(--red);
+  }
+  .btn-primary{background:var(--red);color:#fff}
+  .btn-primary:hover{background:var(--red-deep);border-color:var(--red-deep)}
+  .btn-secondary{background:#fff;color:var(--red)}
+  .btn-secondary:hover{background:#FDF3F3}
+  .btn-quiet{background:#fff;color:var(--ink-soft);border-color:#CFC9C3;font-weight:500}
+  .btn-quiet:hover{color:var(--ink);border-color:var(--ink-soft)}
+  button[disabled]{opacity:.45;cursor:not-allowed}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center}
+
+  .recipient{
+    display:flex;gap:11px;align-items:flex-start;
+    padding:13px 0;border-bottom:1px solid var(--rule);
+  }
+  .recipient:first-of-type{border-top:1px solid var(--rule)}
+  .recipient input{margin-top:3px;width:17px;height:17px;accent-color:var(--red);flex:none}
+  .recipient .who{font-weight:600;font-size:15px}
+  .recipient .what{font-size:13.5px;color:var(--ink-soft)}
+
+  .modes{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .mode{
+    font-size:13.5px;padding:8px 13px;border:1px solid #CFC9C3;background:#fff;
+    color:var(--ink-soft);cursor:pointer;border-radius:2px;font-weight:500;
+  }
+  .mode[aria-pressed="true"]{border-color:var(--red);color:var(--red);background:#FDF3F3;font-weight:600}
+
+  .riding{
+    border-left:3px solid var(--red);
+    padding:12px 0 12px 14px;margin:0 0 18px;
+  }
+  .riding .name{font-family:var(--serif);font-size:19px;font-weight:600}
+  .riding .meta{font-size:13.5px;color:var(--ink-soft)}
+
+  .privacy{
+    background:var(--wash);border:1px solid var(--rule);
+    padding:15px 17px;margin:22px 0 0;
+  }
+  .privacy p{margin:0 0 9px;font-size:13.5px;line-height:1.5;color:var(--ink-soft);max-width:none}
+  .privacy p:last-child{margin:0}
+  .consent{
+    display:flex;gap:10px;align-items:flex-start;
+    margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--rule);
+  }
+  .consent input{margin-top:2px;width:17px;height:17px;accent-color:var(--red);flex:none}
+  .consent label{font-weight:400;font-size:13.5px;line-height:1.5;color:var(--ink);margin:0}
+
+  .msg{padding:12px 14px;font-size:14px;margin:16px 0 0;border-left:3px solid}
+  .msg.err{border-color:var(--red);background:#FDF3F3;color:var(--red-deep)}
+  .msg.ok{border-color:#1F7A45;background:#F1F8F3;color:#14562F}
+  .msg[hidden]{display:none}
+
+  .counter{
+    font-family:var(--serif);font-size:14px;color:var(--ink-soft);
+    margin:24px 0 0;padding-top:16px;border-top:1px solid var(--rule);
+  }
+  .counter b{font-size:19px;color:var(--ink);font-weight:600}
+
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);
+    border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  @media (max-width:620px){
+    :root{--pale:14px}
+    .inner{padding:26px calc(var(--pale) + 16px) 24px}
+    h1{font-size:24px}
+    textarea{min-height:260px}
+    .actions button{width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+<div class="inner">
+
+  <h1>Tell your MP that ethnic community television must not go dark</h1>
+  <p class="lede">Over 85 independent producers broadcast local news in more than 85 languages to 800,000 Canadians a week. They receive no federal funding at all. Two minutes of your time puts that on your MP&rsquo;s desk.</p>
+
+  <div class="mosaic" id="mosaic" role="group" aria-label="Choose the language of the programming you watch"></div>
+  <p class="mosaic-note" id="mosaicNote">Pick the language you watch in, and we&rsquo;ll say so in your letter.</p>
+
+  <div class="rail" aria-hidden="true">
+    <span data-r="1" class="on">Your riding</span>
+    <span data-r="2">Recipients</span>
+    <span data-r="3">Your letter</span>
+    <span data-r="4">Send</span>
+  </div>
+
+  <!-- STEP 1 -->
+  <section class="step on" data-s="1" aria-label="Find your riding">
+    <div class="fieldset">
+      <label for="postal">Your postal code</label>
+      <p class="hint">MPs act on letters from people who live in their riding, so we need to find yours.</p>
+      <div class="row">
+        <input type="text" id="postal" placeholder="M5V 2T6" autocomplete="postal-code" maxlength="7" spellcheck="false">
+        <div style="flex:0 0 auto"><button class="btn-primary" id="lookupBtn">Find my MP</button></div>
+      </div>
+    </div>
+    <div id="ridingBox" hidden></div>
+    <div class="msg err" id="err1" hidden></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" data-s="2" aria-label="Choose recipients">
+    <h2>Who should receive this</h2>
+    <p class="fine">Your own MP carries the most weight. Adding the ministers responsible puts the same message in front of the people who write the budget.</p>
+    <div id="recipients"></div>
+    <div class="actions">
+      <button class="btn-primary" id="toLetter">Continue</button>
+      <button class="btn-quiet" data-back="1">Back</button>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" data-s="3" aria-label="Write your letter">
+    <h2>Your letter</h2>
+    <p class="fine">Offices count identical letters as one. The two or three sentences you add yourself are what makes staff read it.</p>
+
+    <div class="modes" role="group" aria-label="How to write your letter">
+      <button class="mode" data-mode="template" aria-pressed="true">Use the template</button>
+      <button class="mode" data-mode="assist" aria-pressed="false">Help me write it</button>
+      <button class="mode" data-mode="blank" aria-pressed="false">Write my own</button>
+    </div>
+
+    <div id="assistBox" hidden>
+      <div class="fieldset">
+        <label for="assistWhy">Why does this matter to you?</label>
+        <p class="hint">A sentence or two is plenty. What you watch, what your family relies on, what you would lose.</p>
+        <textarea id="assistWhy" style="min-height:100px" placeholder="My parents have watched the Punjabi news on OMNI every evening for fifteen years. It is the only place they hear Canadian news they can follow."></textarea>
+      </div>
+      <div class="actions" style="margin-top:0">
+        <button class="btn-secondary" id="draftBtn">Write my draft</button>
+      </div>
+      <div class="msg err" id="err3" hidden></div>
+    </div>
+
+    <div class="fieldset" style="margin-top:18px">
+      <label for="letter">Edit anything you like before sending</label>
+      <textarea id="letter" spellcheck="true"></textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="toDetails">Continue</button>
+      <button class="btn-quiet" data-back="2">Back</button>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step" data-s="4" aria-label="Your details and sending">
+    <h2>Sign your letter</h2>
+    <p class="fine">Parliamentary offices only act on letters from a named constituent at a real address in the riding.</p>
+
+    <div class="fieldset">
+      <div class="row">
+        <div>
+          <label for="fname">Full name</label>
+          <input type="text" id="fname" autocomplete="name">
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email">
+        </div>
+      </div>
+    </div>
+    <div class="fieldset">
+      <label for="street">Street address</label>
+      <input type="text" id="street" autocomplete="street-address" placeholder="123 Main Street, Apt 4">
+      <p class="hint" id="cityLine"></p>
+    </div>
+
+    <div id="turnstile"></div>
+
+    <div class="actions">
+      <button class="btn-primary" id="sendForMe">Send it for me</button>
+      <button class="btn-secondary" id="openMail">Open in my email app</button>
+      <button class="btn-quiet" data-back="3">Back</button>
+    </div>
+    <p class="fine" style="margin-top:12px">Sending it yourself carries a little more weight, because it arrives from your own address. Either way the letter is the same.</p>
+
+    <div class="msg err" id="err4" hidden></div>
+    <div class="msg ok" id="ok4" hidden></div>
+
+    <div class="privacy">
+      <p><strong>We do not keep your letter.</strong> If you open it in your own email app, nothing you typed ever reaches our servers. If you ask us to send it for you, we hold it only until you click the confirmation link we email you &mdash; then we send it and delete it. Nothing is shared with anyone but the recipients you chose.</p>
+      <p>We do not use cookies here and we do not log your address or postal code.</p>
+      <div class="consent">
+        <input type="checkbox" id="subscribe">
+        <label for="subscribe">Keep me posted on this campaign. We will use your email only for updates on this campaign, and every message has an unsubscribe link.</label>
+      </div>
+    </div>
+  </section>
+
+  <p class="counter" id="counter" hidden></p>
+
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   CONFIG
+   Set API to "" to use the built-in mock so you can open this
+   file straight from disk. In production the server rewrites
+   this to the live origin, or just leave it same-origin.
+   ============================================================ */
+var MOCK = (location.protocol === "file:");
+var API = "";
+function endpoint(path){ return API + path; }
+
+var LANGS = [
+  ["Punjabi","ਪੰਜਾਬੀ"],["Mandarin","普通话"],["Cantonese","粵語"],["Tagalog","Tagalog"],
+  ["Ukrainian","Українська"],["Farsi","فارسی"],["Spanish","Español"],["Russian","Русский"],
+  ["Hindi","हिन्दी"],["Arabic","العربية"],["Portuguese","Português"],["Italian","Italiano"],
+  ["Urdu","اردو"],["Korean","한국어"],["Vietnamese","Tiếng Việt"],["Polish","Polski"],
+  ["Greek","Ελληνικά"],["Tamil","தமிழ்"],["Gujarati","ગુજરાતી"],["Bengali","বাংলা"],
+  ["Turkish","Türkçe"],["Hungarian","Magyar"],["Romanian","Română"],["Czech","Čeština"],
+  ["Slovak","Slovenčina"],["Serbian","Српски"],["Croatian","Hrvatski"],["German","Deutsch"],
+  ["Japanese","日本語"],["Hebrew","עברית"],["Somali","Soomaali"],["Amharic","አማርኛ"],
+  ["Armenian","Հայերեն"],["Nepali","नेपाली"],["Sinhala","සිංහල"],["Thai","ไทย"],
+  ["Khmer","ខ្មែរ"],["Malayalam","മലയാളം"],["Telugu","తెలుగు"],["Swahili","Kiswahili"],
+  ["Albanian","Shqip"],["Bulgarian","Български"],["Macedonian","Македонски"],["Lithuanian","Lietuvių"],
+  ["Georgian","ქართული"],["Azerbaijani","Azərbaycan"],["Pashto","پښتو"],["Mongolian","Монгол"],
+  ["Indonesian","Bahasa Indonesia"],["Yoruba","Yorùbá"],["Twi","Twi"],["Dutch","Nederlands"]
+];
+
+var state = {
+  postal:"", riding:null, mp:null, others:[], lang:null,
+  recipients:[], mode:"template", campaign:null
+};
+
+var $ = function(s){ return document.querySelector(s); };
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+
+/* ---------- iframe height reporting ---------- */
+var lastH = 0;
+function reportHeight(){
+  var h = document.documentElement.scrollHeight;
+  if (Math.abs(h - lastH) > 2){
+    lastH = h;
+    parent.postMessage({ eem:"height", height:h }, "*");
+  }
+}
+if (window.ResizeObserver){ new ResizeObserver(reportHeight).observe(document.body); }
+window.addEventListener("load", reportHeight);
+setInterval(reportHeight, 700);
+
+/* ---------- mosaic ---------- */
+function buildMosaic(){
+  var m = $("#mosaic");
+  LANGS.forEach(function(pair){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "tile";
+    b.textContent = pair[1];
+    b.title = pair[0];
+    b.setAttribute("aria-pressed","false");
+    b.setAttribute("aria-label", pair[0]);
+    b.addEventListener("click", function(){
+      var was = b.getAttribute("aria-pressed") === "true";
+      $$(".tile").forEach(function(t){ t.setAttribute("aria-pressed","false"); });
+      if (was){
+        state.lang = null;
+        $("#mosaicNote").textContent = "Pick the language you watch in, and we\u2019ll say so in your letter.";
+      } else {
+        b.setAttribute("aria-pressed","true");
+        state.lang = pair[0];
+        m.insertBefore(b, m.firstChild);
+        $("#mosaicNote").textContent = "Your letter will mention that you follow " + pair[0] + "-language programming.";
+        if (state.mode === "template" && $("#letter").value) renderTemplate();
+      }
+      reportHeight();
+    });
+    m.appendChild(b);
+  });
+}
+
+/* ---------- steps ---------- */
+function go(n){
+  $$(".step").forEach(function(s){ s.classList.toggle("on", s.dataset.s === String(n)); });
+  $$(".rail span").forEach(function(s){
+    var i = Number(s.dataset.r);
+    s.classList.toggle("on", i === n);
+    s.classList.toggle("done", i < n);
+  });
+  reportHeight();
+  var top = document.querySelector(".frame").getBoundingClientRect().top;
+  parent.postMessage({ eem:"scroll", top:top }, "*");
+}
+$$("[data-back]").forEach(function(b){
+  b.addEventListener("click", function(){ go(Number(b.dataset.back)); });
+});
+
+function showErr(id, html){
+  var e = $(id); e.innerHTML = html; e.hidden = false; reportHeight();
+}
+function hideErr(id){ $(id).hidden = true; }
+
+/* ---------- API helpers ---------- */
+function api(path, opts){
+  if (MOCK) return mock(path, opts);
+  return fetch(endpoint(path), Object.assign({
+    headers:{ "Content-Type":"application/json" },
+    credentials:"omit"
+  }, opts||{})).then(function(r){
+    return r.json().then(function(j){
+      if (!r.ok) throw new Error(j.error || "Something went wrong. Please try again.");
+      return j;
+    });
+  });
+}
+
+/* ---------- mock backend for local preview ---------- */
+function mock(path, opts){
+  var body = opts && opts.body ? JSON.parse(opts.body) : {};
+  return new Promise(function(res){
+    setTimeout(function(){
+      if (path.indexOf("/api/lookup") === 0){
+        res({
+          riding:"Scarborough—Agincourt", province:"ON", city:"SCARBOROUGH",
+          mp:{ name:"Jean Yip", party:"Liberal", email:"Jean.Yip@parl.gc.ca",
+               district:"Scarborough—Agincourt",
+               office:"House of Commons, Ottawa ON K1A 0A6" },
+          others:[
+            { name:"Aris Babikian", role:"MPP, Scarborough—Agincourt", email:"ababikian@ola.org" },
+            { name:"Nick Mantas", role:"City Councillor, Ward 22", email:"councillor_mantas@toronto.ca" }
+          ]
+        });
+      } else if (path.indexOf("/api/draft") === 0){
+        res({ letter: renderTemplate(true).replace(
+          "I am writing as a constituent",
+          "I am writing as a constituent, and because " +
+          (body.why || "this programming matters to my family").replace(/\.$/,"") + ",") });
+      } else if (path.indexOf("/api/send") === 0){
+        res({ ok:true });
+      } else if (path.indexOf("/api/count") === 0){
+        res({ letters:1284, languages:31 });
+      } else {
+        res({ ok:true });
+      }
+    }, 600);
+  });
+}
+
+/* ---------- letter template ---------- */
+function renderTemplate(returnOnly){
+  var mpName = state.mp ? state.mp.name : "your Member of Parliament";
+  var riding = state.riding || "our riding";
+  var langLine = state.lang
+    ? "I watch " + state.lang + "-language community programming, and it is where I get news I can actually follow."
+    : "I rely on third-language community programming for news I can actually follow.";
+
+  var t =
+"Dear " + mpName + ",\n\n" +
+"I am writing as a constituent in " + riding + " to ask you to support funding for Canada's independent ethnic community television producers in the coming federal budget.\n\n" +
+langLine + " More than 85 independent producers broadcast local news in over 85 languages to roughly 800,000 Canadians every week. One in four Canadians has a mother tongue other than English or French, and in Toronto and Vancouver almost half the population speaks a third language at home.\n\n" +
+"This is the only Canadian media sector with no access to federal support at all. Independent third-language producers are excluded from the Canada Media Fund, the Local Journalism Initiative, the Google News Fund and the Canadian Journalism Labour Tax Credit. Bill C-11 committed the government to supporting programming that reflects Canada's ethnocultural diversity, but nothing has reached these producers.\n\n" +
+"The sector is asking for $10.52 million a year for two years, through the Canadian Independent Ethnic Community Television: Anti-Disinformation and Digital Transition Program. Set against the $336 million the Canada Media Fund distributed in 2023-24, this is a small amount to keep local news alive in the languages hundreds of thousands of Canadians live in.\n\n" +
+"If these programs close, communities lose trusted Canadian news in their own languages, and that gap will be filled by foreign disinformation instead.\n\n" +
+"Please raise this with the Minister of Canadian Identity and Culture and support the funding request in the budget. I would be grateful to know your position.\n\n" +
+"Sincerely,\n";
+
+  if (returnOnly) return t;
+  $("#letter").value = t;
+  return t;
+}
+
+/* ---------- step 1: lookup ---------- */
+$("#lookupBtn").addEventListener("click", function(){
+  var raw = $("#postal").value.replace(/\s+/g,"").toUpperCase();
+  hideErr("#err1");
+  if (!/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(raw)){
+    return showErr("#err1","That does not look like a Canadian postal code. Six characters, like M5V 2T6.");
+  }
+  var btn = this; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Looking up';
+  api("/api/lookup?postal=" + raw).then(function(d){
+    state.postal = raw; state.riding = d.riding; state.mp = d.mp; state.others = d.others || [];
+    $("#cityLine").textContent = d.city ? "Your riding: " + d.riding + ", " + d.city + " " + d.province : "";
+    var box = $("#ridingBox");
+    box.innerHTML =
+      '<div class="riding"><div class="name">' + esc(d.mp.name) + '</div>' +
+      '<div class="meta">' + esc(d.mp.party) + ' &middot; ' + esc(d.riding) + '</div></div>' +
+      '<p class="fine">If that is not your riding, check the postal code &mdash; some codes sit on a boundary.</p>';
+    box.hidden = false;
+    buildRecipients();
+    renderTemplate();
+    go(2);
+  }).catch(function(e){
+    showErr("#err1", e.message);
+  }).then(function(){
+    btn.disabled = false; btn.textContent = "Find my MP";
+  });
+});
+$("#postal").addEventListener("keydown", function(e){ if (e.key === "Enter") $("#lookupBtn").click(); });
+
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+
+/* ---------- step 2: recipients ---------- */
+var CAMPAIGN_TARGETS = [
+  { name:"Minister of Canadian Identity and Culture", email:"", role:"Holds the budget line this campaign is asking for", checked:true, key:"minister" },
+  { name:"Office of the Prime Minister", email:"", role:"Final say on what enters the budget", checked:false, key:"pmo" },
+  { name:"Canadian Heritage, Audiovisual Branch", email:"", role:"Writes the program rules that exclude these producers", checked:false, key:"heritage" }
+];
+
+function buildRecipients(){
+  var box = $("#recipients");
+  box.innerHTML = "";
+  addRecipient(box, "mp", state.mp.name, "Your MP, " + state.riding, true, true);
+  CAMPAIGN_TARGETS.forEach(function(t){
+    addRecipient(box, t.key, t.name, t.role, t.checked, false);
+  });
+  state.others.forEach(function(o, i){
+    addRecipient(box, "other" + i, o.name, o.role, false, false);
+  });
+  var copy = document.createElement("p");
+  copy.className = "fine";
+  copy.style.marginTop = "14px";
+  copy.textContent = "A copy also goes to the campaign so we can count it. We do not keep your letter.";
+  box.appendChild(copy);
+  reportHeight();
+}
+function addRecipient(box, key, who, what, checked, locked){
+  var d = document.createElement("div");
+  d.className = "recipient";
+  var id = "rcp_" + key;
+  d.innerHTML = '<input type="checkbox" id="' + id + '" data-key="' + esc(key) + '"' +
+    (checked ? " checked" : "") + (locked ? " disabled" : "") + '>' +
+    '<div><div class="who"><label for="' + id + '" style="font-weight:600;margin:0;display:inline">' +
+    esc(who) + '</label></div><div class="what">' + esc(what) + (locked ? " &middot; always included" : "") + '</div></div>';
+  box.appendChild(d);
+}
+$("#toLetter").addEventListener("click", function(){
+  state.recipients = $$("#recipients input[type=checkbox]").filter(function(c){ return c.checked; })
+    .map(function(c){ return c.dataset.key; });
+  if (state.recipients.indexOf("mp") === -1) state.recipients.push("mp");
+  go(3);
+});
+
+/* ---------- step 3: letter modes ---------- */
+$$(".mode").forEach(function(b){
+  b.addEventListener("click", function(){
+    $$(".mode").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+    b.setAttribute("aria-pressed","true");
+    state.mode = b.dataset.mode;
+    $("#assistBox").hidden = state.mode !== "assist";
+    if (state.mode === "template") renderTemplate();
+    if (state.mode === "blank"){
+      $("#letter").value = "Dear " + (state.mp ? state.mp.name : "") + ",\n\n";
+      $("#letter").focus();
+    }
+    reportHeight();
+  });
+});
+$("#draftBtn").addEventListener("click", function(){
+  var why = $("#assistWhy").value.trim();
+  hideErr("#err3");
+  if (why.length < 10) return showErr("#err3","Tell us a little more &mdash; a sentence is enough.");
+  var btn = this; btn.disabled = true; btn.innerHTML = '<span class="spin" style="border-color:rgba(216,35,42,.3);border-top-color:#D8232A"></span>Writing';
+  api("/api/draft", { method:"POST", body: JSON.stringify({
+    why: why, lang: state.lang, riding: state.riding, mp: state.mp ? state.mp.name : ""
+  })}).then(function(d){
+    $("#letter").value = d.letter;
+    reportHeight();
+  }).catch(function(e){
+    showErr("#err3", e.message);
+  }).then(function(){
+    btn.disabled = false; btn.textContent = "Write my draft";
+  });
+});
+$("#toDetails").addEventListener("click", function(){
+  if ($("#letter").value.trim().length < 60){
+    return showErr("#err3","Your letter looks empty. Pick a template or write a few lines.");
+  }
+  go(4);
+});
+
+/* ---------- step 4: send ---------- */
+function collect(){
+  return {
+    name: $("#fname").value.trim(),
+    email: $("#email").value.trim(),
+    street: $("#street").value.trim(),
+    postal: state.postal,
+    riding: state.riding,
+    language: state.lang,
+    recipients: state.recipients,
+    letter: $("#letter").value.trim(),
+    subscribe: $("#subscribe").checked
+  };
+}
+function validate(d){
+  if (d.name.length < 2) return "Please enter your full name.";
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return "Please enter a valid email address.";
+  if (d.street.length < 5) return "Please enter your street address. MPs' offices need it to confirm you live in the riding.";
+  return null;
+}
+
+$("#openMail").addEventListener("click", function(){
+  var d = collect();
+  hideErr("#err4");
+  var v = validate(d); if (v) return showErr("#err4", v);
+  var to = state.mp.email;
+  var cc = "letters@empowerethnicmedia.org";
+  var subject = "Constituent letter: funding for independent ethnic community television";
+  var body = d.letter + "\n" + d.name + "\n" + d.street + "\n" + d.postal + "\n";
+  var url = "mailto:" + encodeURIComponent(to) +
+            "?cc=" + encodeURIComponent(cc) +
+            "&subject=" + encodeURIComponent(subject) +
+            "&body=" + encodeURIComponent(body);
+  if (url.length > 1900){
+    navigator.clipboard && navigator.clipboard.writeText(body);
+    showErr("#err4","Your letter is too long for some email apps to accept automatically. We have copied it to your clipboard &mdash; open a new email to " + esc(to) + " and paste it in.");
+    return;
+  }
+  api("/api/count", { method:"POST", body: JSON.stringify({ language: state.lang, mode:"self" }) }).catch(function(){});
+  window.location.href = url;
+  $("#ok4").innerHTML = "Your email app should have opened with the letter ready. Press send there and you are done. Thank you.";
+  $("#ok4").hidden = false;
+  reportHeight();
+});
+
+$("#sendForMe").addEventListener("click", function(){
+  var d = collect();
+  hideErr("#err4"); $("#ok4").hidden = true;
+  var v = validate(d); if (v) return showErr("#err4", v);
+  var tsToken = window.turnstile && window.__tsWidget !== undefined
+    ? window.turnstile.getResponse(window.__tsWidget) : "";
+  if (!MOCK && !tsToken) return showErr("#err4","Please complete the check above and try again.");
+  d.turnstile = tsToken;
+  var btn = this; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Sending';
+  api("/api/send", { method:"POST", body: JSON.stringify(d) }).then(function(){
+    $("#ok4").innerHTML = "Almost there. We have emailed <strong>" + esc(d.email) +
+      "</strong> a link to confirm it is really you. Click it and your letter goes out straight away. " +
+      "If you do not click within 30 minutes we delete the letter automatically.";
+    $("#ok4").hidden = false;
+    $("#sendForMe").hidden = true;
+    $("#openMail").hidden = true;
+  }).catch(function(e){
+    showErr("#err4", e.message);
+    if (window.turnstile && window.__tsWidget !== undefined) window.turnstile.reset(window.__tsWidget);
+  }).then(function(){
+    btn.disabled = false; btn.textContent = "Send it for me";
+    reportHeight();
+  });
+});
+
+/* ---------- counter ---------- */
+api("/api/count").then(function(d){
+  if (!d || !d.letters) return;
+  var c = $("#counter");
+  c.innerHTML = "<b>" + d.letters.toLocaleString("en-CA") + "</b> letters sent so far, from viewers in <b>" +
+    d.languages + "</b> language communities.";
+  c.hidden = false;
+  reportHeight();
+}).catch(function(){});
+
+buildMosaic();
+})();
+</script>
+</body>
+</html>
