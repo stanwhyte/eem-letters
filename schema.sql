@@ -45,4 +45,4 @@ CREATE TABLE IF NOT EXISTS languages (
   name TEXT PRIMARY KEY
 );
 
-INSERT OR IGNORE INTO stats (k, v) VALUES ('letters', 0);
+INSERT OR IGNORE INTO stats (k, v) VALUES ('letters', 3131);

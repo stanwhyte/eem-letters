@@ -8,6 +8,12 @@ type = "Text"
 globs = ["**/*.html"]
 fallthrough = true
 
+# Lets the Worker import the logo as a string, to serve at /logo.svg.
+[[rules]]
+type = "Text"
+globs = ["**/*.svg"]
+fallthrough = true
+
 # Custom domain. Cloudflare creates the DNS record and certificate itself.
 routes = [
   { pattern = "letters.empowerethnicmedia.org", custom_domain = true }
@@ -23,22 +29,21 @@ PUBLIC_BASE      = "https://letters.empowerethnicmedia.org"
 FROM_ADDR        = "letters@empowerethnicmedia.org"
 FROM_NAME        = "Empower Ethnic Media"
 CAMPAIGN_COPY    = "letters@empowerethnicmedia.org"
-FRAME_ANCESTORS  = "https://empowerethnicmedia.org https://www.empowerethnicmedia.org"
-TURNSTILE_SITEKEY = "0x4AAAAAAEjKZb3xQy48vDrz"
+FRAME_ANCESTORS  = "https://empowerethnicmedia.org https://www.empowerethnicmedia.org https://savemedia.tilda.ws"
+HCAPTCHA_SITEKEY = "3c8c0550-49e6-41c2-8caa-f894a8cc4c66"
+
+# Set to "1" to hide the "Help me write it" AI-assist mode and reject /api/draft,
+# without needing to remove the ANTHROPIC_KEY secret.
+DISABLE_ASSIST = ""
 
 # Resend Audience for campaign updates. Contacts are added only after the
 # reader clicks the confirmation link, so the list is double opt-in.
 # Leave blank and consent is still recorded in D1, just not pushed to Resend.
 RESEND_AUDIENCE_ID = ""
 
-# Campaign recipients Represent does not supply.
-# Leave blank to hide that option from the widget.
-EMAIL_MINISTER = ""
-EMAIL_PMO      = ""
-EMAIL_HERITAGE = ""
-
 # Secrets are NOT stored here. Set them with:
 #   npx wrangler secret put RESEND_KEY
-#   npx wrangler secret put TURNSTILE_SECRET
+#   npx wrangler secret put HCAPTCHA_SECRET
 #   npx wrangler secret put IP_PEPPER
 #   npx wrangler secret put ANTHROPIC_KEY      (optional)
+#   npx wrangler secret put SHEETS_WEBHOOK_URL  (optional — Google Sheets logging)

@@ -23,7 +23,7 @@ This is why the page can say "we do not keep your letter" as a property of the d
 rather than a promise about our good behaviour. See `seal()` and `handleConfirm()` in
 `src/index.js`.
 
-No cookies. No analytics. No third-party scripts beyond Cloudflare Turnstile, which is
+No cookies. No analytics. No third-party scripts beyond hCaptcha, which is
 used to stop the relay being abused to send mail in strangers' names.
 
 The only durable personal data is newsletter consent, for people who tick the box, which

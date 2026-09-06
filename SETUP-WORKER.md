@@ -11,7 +11,7 @@ About 20 minutes.
 
 - Node.js on your Mac (`node -v` — anything 18 or newer)
 - The Cloudflare account that now holds the empowerethnicmedia.org zone
-- Your Turnstile site key and secret key
+- Your hCaptcha site key and secret key
 - Your Resend API key
 
 ---
@@ -48,11 +48,12 @@ npm run db:init
 
 Open it and set:
 
-- `TURNSTILE_SITEKEY` — the public site key from Turnstile
-- `EMAIL_MINISTER`, `EMAIL_PMO`, `EMAIL_HERITAGE` — leave blank for now if you have not
-  confirmed the current addresses; blank simply hides that recipient from the widget
+- `HCAPTCHA_SITEKEY` — the public site key from hCaptcha
 
-Everything else is already correct for this domain.
+Everything else is already correct for this domain. The 8 fixed government recipients
+(minister, department of finance, committee, and departmental officials) are hardcoded
+in `src/index.js` as `FIXED_TARGETS` and always receive every letter alongside the
+visitor's own MP — there is nothing to configure for them.
 
 ## Step 4. Set the secrets
 
@@ -60,7 +61,7 @@ These never go in a file. Each command prompts for the value and stores it encry
 
 ```bash
 npx wrangler secret put RESEND_KEY
-npx wrangler secret put TURNSTILE_SECRET
+npx wrangler secret put HCAPTCHA_SECRET
 npx wrangler secret put IP_PEPPER
 npx wrangler secret put ANTHROPIC_KEY     # optional
 ```
@@ -77,14 +78,13 @@ reversed back to visitor addresses.
 If you skip `ANTHROPIC_KEY`, the "Help me write it" button reports itself unavailable and
 the other two writing modes work normally.
 
-## Step 5. Update the Turnstile widget hostname
+## Step 5. Register the hCaptcha site for this hostname
 
-Your Turnstile widget was created for `letters.vestnik.ca`. Change it:
+In the hCaptcha dashboard, create (or edit) a site entry for
+`letters.empowerethnicmedia.org`. Save, and use its sitekey/secret in the steps above.
 
-Cloudflare → Turnstile → your widget → Settings → Hostnames → replace with
-`letters.empowerethnicmedia.org`. Save.
-
-If you skip this the token check fails and "Send it for me" refuses every letter.
+If the hostname does not match, the token check fails and "Send it for me" refuses every
+letter.
 
 ## Step 6. Deploy
 
@@ -106,7 +106,7 @@ curl -s "https://letters.empowerethnicmedia.org/api/lookup?postal=M5V2T6" | head
 ```
 
 Open `https://letters.empowerethnicmedia.org/` in a browser: red bands, language mosaic,
-working lookup, Turnstile checkbox on the last step.
+working lookup, hCaptcha checkbox on the last step.
 
 ## Step 7. Embed in Tilda
 
@@ -227,7 +227,7 @@ yours to maintain. Check them before each push.
 **Identical letters get counted once.** Offices deduplicate. The "Help me write it" path
 and the free-text field are the reason letters get read, not decoration.
 
-**The relay must not become an open relay.** Turnstile, the rate limit and the email
+**The relay must not become an open relay.** hCaptcha, the rate limit and the email
 confirmation guard the same thing: that nobody can send mail to parl.gc.ca in a stranger's
 name from your infrastructure. If you disable one for testing, put it back.
 

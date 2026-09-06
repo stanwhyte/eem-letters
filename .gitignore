@@ -8,3 +8,4 @@ consent-*.json
 consent-*.csv
 consent-*.tsv
 .DS_Store
+cloudflare-turnstile-ticket.md
